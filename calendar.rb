@@ -57,3 +57,73 @@ class Calendar
     date.day == @last_date.day
   end
 end
+
+
+class CalendarStringRenderer
+  def initialize(calendar)
+    @calendar = calendar
+  end
+
+  def render
+    lines.join("\n")
+  end
+
+
+  private
+
+  def lines
+    buffer = []
+    buffer << month_name
+    buffer << day_names
+    buffer << weeks + "\n"
+    buffer
+  end
+
+  def weeks
+    week_strings = []
+    @calendar.weeks.each do |week|
+      week_strings << week_str(week)
+    end
+    week_strings.join("\n")
+  end
+
+  def week_str(week)
+    day_strs = []
+    week.each do |day|
+      day_str = single_digit_day?(day) ? "#{day} " : day.to_s
+      day_strs << day_str(day)
+    end
+    day_strs.join(' ')
+  end
+
+  def day_str(day)
+    return "  " if day.nil?
+    return " #{day}" if day.to_s.length == 1
+    return day.to_s
+  end
+
+  def single_digit_day?(day)
+    day.to_s.length == 1 || day.nil?
+  end
+
+  def day_names
+    'Su Mo Tu We Th Fr Sa'
+  end
+
+  def month_name
+    month_names = {
+      1 => 'January',
+      2 => 'February',
+      3 => 'March',
+      4 => 'April',
+      5 => 'May',
+      6 => 'June',
+      7 => 'July',
+      8 => 'August',
+      9 => 'September',
+      10 => 'October',
+      11 => 'November',
+      12 => 'December' }
+    month_names[@calendar.month]
+  end
+end

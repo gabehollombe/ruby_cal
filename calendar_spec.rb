@@ -60,3 +60,48 @@ describe 'calendar' do
     end
   end
 end
+
+
+describe 'calendar string renderer' do
+  let(:cal) { Calendar.new(8, 2014) }
+  let(:renderer) { CalendarStringRenderer.new(cal) }
+
+  describe 'render' do
+    let(:output)  { renderer.render }
+    let(:lines)  { renderer.render.split("\n") }
+
+    describe 'first line' do
+      let(:line) { lines[0] }
+      it 'prints the month name' do
+        expect(line).to eq 'August'
+      end
+    end
+
+    describe 'second line' do
+      let(:line) { lines[1] }
+      it 'prints the day names' do
+        expect(line).to eq 'Su Mo Tu We Th Fr Sa'
+      end
+    end
+
+    describe 'the rest of the lines' do
+      context 'August 2014' do
+        let(:cal) { Calendar.new(8, 2014) }
+
+        it 'prints the days for each week' do
+          expected_lines = <<-LINES
+August
+Su Mo Tu We Th Fr Sa
+                1  2
+ 3  4  5  6  7  8  9
+10 11 12 13 14 15 16
+17 18 19 20 21 22 23
+24 25 26 27 28 29 30
+31                  
+LINES
+          expect(output).to eq expected_lines
+        end
+      end
+    end
+  end
+end
