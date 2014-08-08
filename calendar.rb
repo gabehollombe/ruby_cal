@@ -14,11 +14,12 @@ require 'date'
 require 'byebug'
 
 class Calendar
-  attr_reader :month, :year, :weeks
+  attr_reader :month, :year, :weeks, :week_starts_on
 
-  def initialize(month, year)
+  def initialize(month, year, week_starts_on=0)
     @month = month
     @year = year
+    @week_starts_on = week_starts_on
     @first_date = Date.new(@year, @month, 1)
     @last_date = Date.new(@year, @month, -1)
 
@@ -26,7 +27,17 @@ class Calendar
   end
 
   def day_names
-    %w(Su Mo Tu We Th Fr Sa)
+    0.upto(6).map { |wday| day_index_to_name[(wday + @week_starts_on) % 7] }
+  end
+
+  def day_index_to_name
+    { 0 => 'Su',
+      1 => 'Mo',
+      2 => 'Tu',
+      3 => 'We',
+      4 => 'Th',
+      5 => 'Fr',
+      6 => 'Sa' }
   end
 
   private
@@ -40,7 +51,7 @@ class Calendar
     days = @first_date.day..@last_date.day
     days.each do |cur_day|
       cur_date = Date.new(@year, @month, cur_day)
-      week[cur_date.wday] = cur_day
+      week[cur_date.wday - @week_starts_on] = cur_day
 
       if is_end_of_week(cur_date) || is_end_of_month(cur_date)
         @weeks << week
@@ -50,7 +61,7 @@ class Calendar
   end
 
   def is_end_of_week(date)
-    date.wday == 6
+    date.wday == (6 + @week_starts_on) % 7
   end
 
   def is_end_of_month(date)
@@ -107,7 +118,7 @@ class CalendarStringRenderer
   end
 
   def day_names
-    'Su Mo Tu We Th Fr Sa'
+    @calendar.day_names.join(' ')
   end
 
   def month_name

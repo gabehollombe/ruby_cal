@@ -1,12 +1,3 @@
-#     August 2014
-# Su Mo Tu We Th Fr Sa
-#                 1  2
-#  3  4  5  6  7  8  9
-# 10 11 12 13 14 15 16
-# 17 18 19 20 21 22 23
-# 24 25 26 27 28 29 30
-# 31
-
 require 'rspec'
 require_relative './calendar'
 
@@ -34,6 +25,11 @@ describe 'calendar' do
   it "puts nil in each index of the first week that don't have a day" do
     cal = Calendar.new(8, 2014)
     expect(cal.weeks.first.first).to be_nil
+  end
+
+  it 'allows for starting the week on a different day' do
+    cal = Calendar.new(9, 2014, 2)
+    expect(cal.day_names).to eq %w(Tu We Th Fr Sa Su Mo)
   end
 
   context 'August 2014' do
@@ -65,9 +61,9 @@ end
 describe 'calendar string renderer' do
   let(:cal) { Calendar.new(8, 2014) }
   let(:renderer) { CalendarStringRenderer.new(cal) }
+  let(:output)  { renderer.render }
 
   describe 'render' do
-    let(:output)  { renderer.render }
     let(:lines)  { renderer.render.split("\n") }
 
     describe 'first line' do
@@ -104,4 +100,22 @@ LINES
       end
     end
   end
+
+  context 'Aug 2014, starting the week on tuesday' do
+    let(:cal) { Calendar.new(8, 2014, 2) }
+
+    it 'prints the days for each week' do
+      expected_lines = <<-LINES
+August
+Tu We Th Fr Sa Su Mo
+          1  2  3  4
+ 5  6  7  8  9 10 11
+12 13 14 15 16 17 18
+19 20 21 22 23 24 25
+26 27 28 29 30 31   
+LINES
+      expect(output).to eq expected_lines
+    end
+  end
+
 end
