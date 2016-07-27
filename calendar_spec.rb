@@ -1,7 +1,7 @@
 require 'rspec'
 require_relative './calendar'
 
-describe 'calendar' do
+RSpec.describe 'calendar' do
   let(:cal) { Calendar.new(1, 1970) }
 
   it 'inits a month and year' do
@@ -93,7 +93,7 @@ Su Mo Tu We Th Fr Sa
 10 11 12 13 14 15 16
 17 18 19 20 21 22 23
 24 25 26 27 28 29 30
-31                  
+31
 LINES
           expect(output).to eq expected_lines
         end
@@ -112,10 +112,9 @@ Tu We Th Fr Sa Su Mo
  5  6  7  8  9 10 11
 12 13 14 15 16 17 18
 19 20 21 22 23 24 25
-26 27 28 29 30 31   
+26 27 28 29 30 31
 LINES
       expect(output).to eq expected_lines
     end
   end
-
 end

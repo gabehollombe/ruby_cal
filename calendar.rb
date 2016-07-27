@@ -1,20 +1,8 @@
-# cal = Calendar.new
-#
-# puts cal.week_day_names.join(' ')
-# cal.weeks.each do |week|
-#   puts_week cal.week
-# end
-#
-# def puts_week(week)
-#   puts week.days.join(' ')
-# end
-
 require 'date'
-
 require 'byebug'
 
 class Calendar
-  attr_reader :month, :year, :weeks, :week_starts_on
+  attr_reader :month, :year, :week_starts_on
 
   def initialize(month, year, week_starts_on=0)
     @month = month
@@ -22,50 +10,22 @@ class Calendar
     @week_starts_on = week_starts_on
     @first_date = Date.new(@year, @month, 1)
     @last_date = Date.new(@year, @month, -1)
-
-    build_weeks
   end
 
   def day_names
-    0.upto(6).map { |wday| day_index_to_name[(wday + @week_starts_on) % 7] }
+    0.upto(6).map { |wday| day_name[(wday + @week_starts_on) % 7] }
   end
 
-  def day_index_to_name
-    { 0 => 'Su',
-      1 => 'Mo',
-      2 => 'Tu',
-      3 => 'We',
-      4 => 'Th',
-      5 => 'Fr',
-      6 => 'Sa' }
+  def weeks
+    padding = [@first_date.wday - @week_starts_on, 0].max
+    days = Array.new(padding) + (@first_date.day..@last_date.day).to_a
+    @weeks = days.each_slice(7).to_a
   end
 
   private
 
-  def build_weeks
-    first_date_wday = @first_date.wday
-    last_date_wday = @last_date.wday
-
-    @weeks = []
-    week = [nil, nil, nil, nil, nil, nil, nil]
-    days = @first_date.day..@last_date.day
-    days.each do |cur_day|
-      cur_date = Date.new(@year, @month, cur_day)
-      week[cur_date.wday - @week_starts_on] = cur_day
-
-      if is_end_of_week(cur_date) || is_end_of_month(cur_date)
-        @weeks << week
-        week = Array.new(7)
-      end
-    end
-  end
-
-  def is_end_of_week(date)
-    date.wday == (6 + @week_starts_on) % 7
-  end
-
-  def is_end_of_month(date)
-    date.day == @last_date.day
+  def day_name
+    %w(Su Mo Tu We Th Fr Sa)
   end
 end
 
@@ -78,7 +38,6 @@ class CalendarStringRenderer
   def render
     lines.join("\n")
   end
-
 
   private
 
@@ -122,19 +81,7 @@ class CalendarStringRenderer
   end
 
   def month_name
-    month_names = {
-      1 => 'January',
-      2 => 'February',
-      3 => 'March',
-      4 => 'April',
-      5 => 'May',
-      6 => 'June',
-      7 => 'July',
-      8 => 'August',
-      9 => 'September',
-      10 => 'October',
-      11 => 'November',
-      12 => 'December' }
-    month_names[@calendar.month]
+    month_names = %w(January February March April May June July August September October November December)
+    month_names[@calendar.month - 1]
   end
 end
