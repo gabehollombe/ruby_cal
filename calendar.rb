@@ -13,7 +13,7 @@ class Calendar
   end
 
   def day_names
-    0.upto(6).map { |wday| day_name[(wday + @week_starts_on) % 7] }
+    0.upto(6).map { |wday| day_name(wday + @week_starts_on) }
   end
 
   def weeks
@@ -22,10 +22,15 @@ class Calendar
     @weeks = days.each_slice(7).to_a
   end
 
+  def month_name
+    month_names = %w(January February March April May June July August September October November December)
+    month_names[@month - 1]
+  end
+
   private
 
-  def day_name
-    %w(Su Mo Tu We Th Fr Sa)
+  def day_name(i)
+    %w(Su Mo Tu We Th Fr Sa)[i % 7]
   end
 end
 
@@ -36,44 +41,25 @@ class CalendarStringRenderer
   end
 
   def render
-    lines.join("\n")
+    lines.join("\n") + "\n"
   end
 
   private
 
   def lines
-    buffer = []
-    buffer << month_name
-    buffer << day_names
-    buffer << weeks + "\n"
-    buffer
+    [month_name, day_names, weeks]
   end
 
   def weeks
-    week_strings = []
-    @calendar.weeks.each do |week|
-      week_strings << week_str(week)
-    end
-    week_strings.join("\n")
+    @calendar.weeks.map {|w| week_str(w)}.join "\n"
   end
 
   def week_str(week)
-    day_strs = []
-    week.each do |day|
-      day_str = single_digit_day?(day) ? "#{day} " : day.to_s
-      day_strs << day_str(day)
-    end
-    day_strs.join(' ')
+    week.map {|d| day_str(d) }.join " "
   end
 
   def day_str(day)
-    return "  " if day.nil?
-    return " #{day}" if day.to_s.length == 1
-    return day.to_s
-  end
-
-  def single_digit_day?(day)
-    day.to_s.length == 1 || day.nil?
+    day.to_s.rjust(2)
   end
 
   def day_names
@@ -81,7 +67,6 @@ class CalendarStringRenderer
   end
 
   def month_name
-    month_names = %w(January February March April May June July August September October November December)
-    month_names[@calendar.month - 1]
+    @calendar.month_name
   end
 end

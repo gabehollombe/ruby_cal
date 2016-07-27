@@ -32,6 +32,11 @@ RSpec.describe 'calendar' do
     expect(cal.day_names).to eq %w(Tu We Th Fr Sa Su Mo)
   end
 
+  it 'reports its month' do
+    cal = Calendar.new(9, 2014)
+    expect(cal.month_name).to eq "September"
+  end
+
   context 'August 2014' do
     let(:cal) { Calendar.new(9, 2014) }
 
